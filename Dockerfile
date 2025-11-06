@@ -1,13 +1,13 @@
 # Estágio 1: Etapa de Build (compilação da aplicação)
-# Usar a tag correta: '21-slim-jdk'
-FROM openjdk:21-slim-jdk AS builder
+# Use a imagem correta para o JDK 21
+FROM openjdk:21-jdk-slim AS builder
 WORKDIR /app
 COPY . .
 RUN ./gradlew build
 
 # Estágio 2: Etapa de Execução (executar a aplicação)
-# Usar a tag correta: '21-slim-jre'
-FROM openjdk:21-slim-jre AS runner
+# Use a imagem correta para o JRE 21
+FROM openjdk:21-jre-slim AS runner
 WORKDIR /app
 
 # Copia o arquivo JAR compilado do estágio 'builder' para este estágio
