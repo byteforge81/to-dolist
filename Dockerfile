@@ -1,15 +1,25 @@
-# Estágio 1: Build
+# Etapa 1 — Build da aplicação (Maven)
 FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
-COPY . .
-RUN chmod +x gradlew
-RUN ./gradlew build
 
-# Estágio 2: Execução
-FROM eclipse-temurin:21-jre AS runner
+# Copiar os arquivos do Maven
+COPY pom.xml .
+COPY src ./src
+
+# Dar permissão de execução ao mvnw (wrapper do Maven)
+COPY mvnw .
+COPY .mvn ./.mvn
+RUN chmod +x mvnw
+
+# Rodar o build (gera o .jar)
+RUN ./mvnw clean package -DskipTests
+
+# Etapa 2 — Execução da aplicação
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+# Copia o jar buildado para o novo estágio
+COPY --from=builder /app/target/*.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
